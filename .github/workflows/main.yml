@@ -1,0 +1,27 @@
+name: Build Shwan APK
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: کردنه وەی فایلی ZIP
+        run: |
+          if [ -f "Shwan_Android_App_Project.zip" ]; then
+            unzip -q -o Shwan_Android_App_Project.zip
+            cp -r ShwanAndroidApp/* .
+          elif [ -d "ShwanAndroidApp" ]; then
+            cp -r ShwanAndroidApp/* .
+          fi
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+      - run: gradle assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Shwan-Android-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
